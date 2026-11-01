@@ -1,0 +1,56 @@
+<body style="margin:0">
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+    }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// Scene setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xffffff);
+
+// Camera
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(5, 4, 8);
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.append(renderer.domElement);
+
+// Controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.5, 0);
+
+// Lighting
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+dirLight.position.set(5, 10, 7);
+scene.add(new THREE.AmbientLight(0xffffff, 0.6), dirLight);
+
+// Table
+const material = new THREE.MeshStandardMaterial({ color: 0x8B5A2B });
+
+const addBox = (w, h, d, x, y, z) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+    mesh.position.set(x, y, z);
+    scene.add(mesh);
+};
+
+addBox(4, 0.25, 2.5, 0, 2, 0); // tabletop
+for (const x of [-1.7, 1.7])
+    for (const z of [-1, 1])
+        addBox(0.25, 1.9, 0.25, x, 0.95, z); // legs
+
+// Animation loop
+renderer.setAnimationLoop(() => {
+    controls.update();
+    renderer.render(scene, camera);
+});
+</script>
+</body>
